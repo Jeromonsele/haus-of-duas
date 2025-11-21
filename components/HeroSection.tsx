@@ -47,8 +47,8 @@ const HeroSection: React.FC = () => {
             <div className="relative z-10 max-w-6xl mx-auto text-center mt-12 w-full">
                 <FadeIn delay={0.2}>
                     <p className="text-[10px] md:text-xs uppercase tracking-[0.4em] mb-8 opacity-40">Strategic Art Curation</p>
-                    <h1 className="text-4xl sm:text-6xl md:text-8xl lg:text-[9rem] font-serif font-light tracking-tight leading-[0.9] text-[#1C1C1C] mb-12 break-words">
-                        From Blank Space <br />
+                    <h1 className="text-5xl sm:text-6xl md:text-8xl lg:text-[9rem] font-serif font-light tracking-tight leading-[0.9] text-[#1C1C1C] mb-12 text-balance">
+                        From Blank Space <br className="hidden md:block" />
                         <span className="italic font-normal text-black/80">to Brand Story</span>
                     </h1>
                 </FadeIn>

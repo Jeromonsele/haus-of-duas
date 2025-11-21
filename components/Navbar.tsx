@@ -33,8 +33,8 @@ const Navbar: React.FC<{
                     Inquire
                 </button>
 
-                <button onClick={onOpenMobileMenu} className="md:hidden z-50">
-                    <Menu className="w-5 h-5" />
+                <button onClick={onOpenMobileMenu} className="md:hidden z-50 p-2 -mr-2">
+                    <Menu className="w-6 h-6" />
                 </button>
             </div>
         </nav>

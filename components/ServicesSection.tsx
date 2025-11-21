@@ -4,11 +4,11 @@ import FadeIn from './FadeIn';
 
 const ServicesSection: React.FC<{ onInquire: (service: string) => void }> = ({ onInquire }) => {
     return (
-        <section id="services" className="py-32 px-6 md:px-12 max-w-[1600px] mx-auto">
-            <FadeIn className="mb-24 text-center">
+        <section id="services" className="py-20 md:py-32 px-6 md:px-12 max-w-[1600px] mx-auto">
+            <FadeIn className="mb-16 md:mb-24 text-center">
                 <span className="block text-[10px] tracking-widest uppercase mb-4 opacity-40">03 / Offerings</span>
-                <h2 className="text-5xl md:text-7xl font-serif mb-6">Visual Ecosystems</h2>
-                <p className="text-lg font-light opacity-60 max-w-xl mx-auto">
+                <h2 className="text-4xl md:text-5xl lg:text-7xl font-serif mb-6">Visual Ecosystems</h2>
+                <p className="text-base md:text-lg font-light opacity-60 max-w-xl mx-auto">
                     Tailored approaches to meet the narrative needs of your space.
                 </p>
             </FadeIn>
@@ -17,7 +17,7 @@ const ServicesSection: React.FC<{ onInquire: (service: string) => void }> = ({ o
 
                 {/* CARD 1: Bespoke (Video Background) */}
                 <FadeIn delay={0.2} className="h-full">
-                    <div className="group relative h-[600px] md:h-[800px] overflow-hidden bg-[#1C1C1C] cursor-pointer" onClick={() => onInquire('Bespoke')}>
+                    <div className="group relative h-[500px] md:h-[800px] overflow-hidden bg-[#1C1C1C] cursor-pointer" onClick={() => onInquire('Bespoke')}>
                         <div className="absolute inset-0">
                             {/* Fallback Image */}
                             <img
@@ -67,7 +67,7 @@ const ServicesSection: React.FC<{ onInquire: (service: string) => void }> = ({ o
 
                 {/* CARD 2: Collections (Image) */}
                 <FadeIn delay={0.4} className="h-full">
-                    <div className="group relative h-[600px] md:h-[800px] overflow-hidden bg-[#E0E0E0] cursor-pointer" onClick={() => onInquire('Moodboard')}>
+                    <div className="group relative h-[500px] md:h-[800px] overflow-hidden bg-[#E0E0E0] cursor-pointer" onClick={() => onInquire('Moodboard')}>
                         <div className="absolute inset-0">
                             <img
                                 src="/images/moodboard-bg.png"
