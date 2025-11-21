@@ -1,23 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 const Preloader: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
-    const [textIndex, setTextIndex] = useState(0);
-    const words = ["HAUS", "OF", "DUAS"];
-
     useEffect(() => {
-        const interval = setInterval(() => {
-            setTextIndex((prev) => {
-                if (prev === words.length - 1) {
-                    clearInterval(interval);
-                    setTimeout(onComplete, 1000); // Wait a bit after the last word
-                    return prev;
-                }
-                return prev + 1;
-            });
-        }, 500);
-
-        return () => clearInterval(interval);
+        const timer = setTimeout(() => {
+            onComplete();
+        }, 2000); // Show for 2 seconds
+        return () => clearTimeout(timer);
     }, [onComplete]);
 
     return (
@@ -26,17 +15,15 @@ const Preloader: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
             initial={{ y: 0 }}
             exit={{ y: '-100%', transition: { duration: 0.8, ease: [0.76, 0, 0.24, 1] } }}
         >
-            <div className="text-6xl md:text-9xl font-bold overflow-hidden">
-                <motion.span
-                    key={textIndex}
-                    initial={{ y: 100, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    exit={{ y: -100, opacity: 0 }}
-                    transition={{ duration: 0.5, ease: "easeOut" }}
-                    className="inline-block"
+            <div className="overflow-hidden">
+                <motion.h1
+                    initial={{ y: 100 }}
+                    animate={{ y: 0 }}
+                    transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1], delay: 0.2 }}
+                    className="text-4xl md:text-6xl lg:text-8xl font-bold tracking-widest uppercase"
                 >
-                    {words[textIndex]}
-                </motion.span>
+                    Haus of Duas
+                </motion.h1>
             </div>
         </motion.div>
     );

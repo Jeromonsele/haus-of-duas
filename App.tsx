@@ -3,25 +3,27 @@
  * SPDX-License-Identifier: Apache-2.0
 */
 
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { AnimatePresence } from 'framer-motion';
-import AIChat from './components/AIChat';
-import GrainOverlay from './components/GrainOverlay';
 import Navbar from './components/Navbar';
 import HeroSection from './components/HeroSection';
 import ManifestoSection from './components/ManifestoSection';
-import GallerySection from './components/GallerySection';
 import ServicesSection from './components/ServicesSection';
+import GallerySection from './components/GallerySection';
 import ProcessSection from './components/ProcessSection';
 import Footer from './components/Footer';
-import MobileMenu from './components/MobileMenu';
-import InquiryModal from './components/InquiryModal';
-import ProjectDetail from './components/ProjectDetail';
+import GrainOverlay from './components/GrainOverlay';
 import AllProjects from './components/AllProjects';
 import CustomCursor from './components/CustomCursor';
 import SmoothScroll from './components/SmoothScroll';
 import Preloader from './components/Preloader';
 import { Project } from './types';
+
+// Lazy load heavy components
+const MobileMenu = React.lazy(() => import('./components/MobileMenu'));
+const InquiryModal = React.lazy(() => import('./components/InquiryModal'));
+const ProjectDetail = React.lazy(() => import('./components/ProjectDetail'));
+const AIChat = React.lazy(() => import('./components/AIChat'));
 
 const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -74,25 +76,34 @@ const App: React.FC = () => {
       </AnimatePresence>
 
       {/* Overlay Components */}
-      <MobileMenu
-        isOpen={mobileMenuOpen}
-        onClose={() => setMobileMenuOpen(false)}
-        onInquire={() => openInquiry()}
-        onNavigate={handleScrollToSection}
-      />
+      <Suspense fallback={null}>
+        <MobileMenu
+          isOpen={mobileMenuOpen}
+          onClose={() => setMobileMenuOpen(false)}
+          onInquire={() => openInquiry()}
+          onNavigate={(id) => {
+            setMobileMenuOpen(false);
+            handleScrollToSection(id);
+          }}
+        />
+      </Suspense>
 
-      <InquiryModal
-        isOpen={inquiryOpen}
-        onClose={() => setInquiryOpen(false)}
-        preSelectedService={preSelectedService}
-      />
+      <Suspense fallback={null}>
+        <InquiryModal
+          isOpen={inquiryOpen}
+          onClose={() => setInquiryOpen(false)}
+          preSelectedService={preSelectedService}
+        />
+      </Suspense>
 
       <AnimatePresence>
         {activeProject && (
-          <ProjectDetail
-            project={activeProject}
-            onClose={() => setActiveProject(null)}
-          />
+          <Suspense fallback={null}>
+            <ProjectDetail
+              project={activeProject}
+              onClose={() => setActiveProject(null)}
+            />
+          </Suspense>
         )}
         {showAllProjects && (
           <AllProjects
