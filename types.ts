@@ -25,6 +25,7 @@ export interface Project {
   location: string;
   year: string;
   description: string;
+  gallery?: string[];
 }
 
 export interface Statistic {

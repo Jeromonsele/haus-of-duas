@@ -8,7 +8,6 @@ import { AnimatePresence } from 'framer-motion';
 import Navbar from './components/Navbar';
 import HeroSection from './components/HeroSection';
 import ManifestoSection from './components/ManifestoSection';
-import ServicesSection from './components/ServicesSection';
 import GallerySection from './components/GallerySection';
 import ProcessSection from './components/ProcessSection';
 import Footer from './components/Footer';
@@ -24,6 +23,9 @@ const MobileMenu = React.lazy(() => import('./components/MobileMenu'));
 const InquiryModal = React.lazy(() => import('./components/InquiryModal'));
 const ProjectDetail = React.lazy(() => import('./components/ProjectDetail'));
 const AIChat = React.lazy(() => import('./components/AIChat'));
+const AboutSection = React.lazy(() => import('./components/AboutSection'));
+const ServicesSection = React.lazy(() => import('./components/ServicesSection'));
+const AudioController = React.lazy(() => import('./components/AudioController'));
 
 const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -102,6 +104,7 @@ const App: React.FC = () => {
             <ProjectDetail
               project={activeProject}
               onClose={() => setActiveProject(null)}
+              onNext={(nextProject) => setActiveProject(nextProject)}
             />
           </Suspense>
         )}
@@ -131,13 +134,17 @@ const App: React.FC = () => {
       <ManifestoSection />
 
       {/* CURATED GALLERY SECTION */}
-      <GallerySection
-        onShowAll={() => setShowAllProjects(true)}
-        onSelectProject={setActiveProject}
-      />
+      <GallerySection />
+
+      {/* ABOUT SECTION */}
+      <Suspense fallback={null}>
+        <AboutSection />
+      </Suspense>
 
       {/* SERVICES */}
-      <ServicesSection onInquire={openInquiry} />
+      <Suspense fallback={null}>
+        <ServicesSection onInquire={openInquiry} />
+      </Suspense>
 
       {/* PROCESS / TECH */}
       <ProcessSection onInquire={() => openInquiry()} />
@@ -146,6 +153,9 @@ const App: React.FC = () => {
       <Footer onNavigate={handleScrollToSection} />
 
       <AIChat />
+      <Suspense fallback={null}>
+        <AudioController />
+      </Suspense>
     </div>
   );
 };

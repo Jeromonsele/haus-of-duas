@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Check, ArrowRight } from 'lucide-react';
+import { X, Check, ArrowRight, Loader2 } from 'lucide-react';
 
 const InquiryModal: React.FC<{ isOpen: boolean; onClose: () => void; preSelectedService?: string }> = ({ isOpen, onClose, preSelectedService }) => {
     const [step, setStep] = useState(1);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(false);
     const [formData, setFormData] = useState({
         name: '',
         company: '',
@@ -15,6 +17,8 @@ const InquiryModal: React.FC<{ isOpen: boolean; onClose: () => void; preSelected
     useEffect(() => {
         if (isOpen) {
             setStep(1);
+            setIsSuccess(false);
+            setIsSubmitting(false);
             let initialService = '';
             // Map shortcodes from buttons to full labels
             if (preSelectedService === 'Bespoke') initialService = 'Fully-Custom Masterpiece';
@@ -30,6 +34,14 @@ const InquiryModal: React.FC<{ isOpen: boolean; onClose: () => void; preSelected
 
     const isStep1Valid = formData.name.trim().length > 0 && formData.company.trim().length > 0;
     const isStep2Valid = formData.service.length > 0;
+
+    const handleSubmit = async () => {
+        setIsSubmitting(true);
+        // Simulate network request
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        setIsSubmitting(false);
+        setIsSuccess(true);
+    };
 
     return (
         <>
@@ -53,114 +65,148 @@ const InquiryModal: React.FC<{ isOpen: boolean; onClose: () => void; preSelected
                     <button onClick={onClose} className="hover:opacity-50 transition-opacity"><X className="w-6 h-6" /></button>
                 </div>
 
-                <div className="flex-1 p-8 md:p-16 overflow-y-auto">
-                    {step === 1 ? (
-                        <motion.div
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: -20 }}
-                            className="space-y-12"
-                        >
-                            <div>
-                                <h3 className="text-3xl font-serif mb-2">Let's start with the basics.</h3>
-                                <p className="opacity-60 font-light">We'll tailor our portfolio to your needs.</p>
-                            </div>
-
-                            {/* Visual Indicator for Pre-Selected Service */}
-                            {formData.service && (
-                                <motion.div
-                                    initial={{ opacity: 0, y: -10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    className="inline-flex items-center gap-3 px-4 py-3 bg-[#1C1C1C] text-[#F5F2EB] w-fit"
-                                >
-                                    <Check className="w-3 h-3" />
-                                    <span className="text-[10px] uppercase tracking-widest font-medium">Selected: {formData.service}</span>
-                                </motion.div>
-                            )}
-
-                            <div className="space-y-8">
-                                <div className="space-y-2">
-                                    <label className="text-xs uppercase tracking-widest opacity-50">Your Name</label>
-                                    <input
-                                        type="text"
-                                        value={formData.name}
-                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                        className="w-full bg-transparent border-b border-[#1C1C1C]/20 py-2 text-xl focus:outline-none focus:border-[#1C1C1C] transition-colors"
-                                        placeholder="e.g. Jane Doe"
-                                        autoFocus
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-xs uppercase tracking-widest opacity-50">Company / Org</label>
-                                    <input
-                                        type="text"
-                                        value={formData.company}
-                                        onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                                        className="w-full bg-transparent border-b border-[#1C1C1C]/20 py-2 text-xl focus:outline-none focus:border-[#1C1C1C] transition-colors"
-                                        placeholder="e.g. Sterling Partners"
-                                    />
-                                </div>
-                            </div>
-
-                            <button
-                                onClick={() => isStep1Valid && setStep(2)}
-                                disabled={!isStep1Valid}
-                                className={`group flex items-center gap-4 text-xs uppercase tracking-[0.25em] bg-[#1C1C1C] text-[#F5F2EB] px-8 py-4 transition-all ${isStep1Valid ? 'hover:bg-[#333]' : 'opacity-50 cursor-not-allowed'}`}
+                <div className="flex-1 p-8 md:p-16 overflow-y-auto relative">
+                    <AnimatePresence mode="wait">
+                        {isSuccess ? (
+                            <motion.div
+                                key="success"
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                className="flex flex-col items-center justify-center h-full text-center space-y-6"
                             >
-                                <span>Next Step</span>
-                                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                            </button>
-                        </motion.div>
-                    ) : (
-                        <motion.div
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            className="space-y-12"
-                        >
-                            <div>
-                                <h3 className="text-3xl font-serif mb-2">What are you looking for?</h3>
-                                <p className="opacity-60 font-light">Tell us about the scope.</p>
-                            </div>
-
-                            <div className="space-y-6">
-                                {[
-                                    'Fully-Custom Masterpiece',
-                                    'Moodboard Collection',
-                                    'Art Strategy Consulting',
-                                    'Other'
-                                ].map((opt) => (
-                                    <label key={opt} className="flex items-center gap-4 cursor-pointer group select-none" onClick={() => setFormData({ ...formData, service: opt })}>
-                                        <div className={`w-6 h-6 border border-[#1C1C1C]/30 rounded-full flex items-center justify-center transition-colors ${formData.service === opt ? 'border-[#1C1C1C]' : 'group-hover:border-[#1C1C1C]'}`}>
-                                            <div className={`w-3 h-3 bg-[#1C1C1C] rounded-full transition-opacity ${formData.service === opt ? 'opacity-100' : 'opacity-0'}`} />
-                                        </div>
-                                        <span className={`text-lg font-light transition-colors ${formData.service === opt ? 'text-[#1C1C1C]' : 'text-[#1C1C1C]/60 group-hover:text-[#1C1C1C]'}`}>{opt}</span>
-                                    </label>
-                                ))}
-                            </div>
-
-                            <div className="space-y-2 pt-8">
-                                <label className="text-xs uppercase tracking-widest opacity-50">Any specifics?</label>
-                                <textarea
-                                    value={formData.details}
-                                    onChange={(e) => setFormData({ ...formData, details: e.target.value })}
-                                    className="w-full bg-transparent border-b border-[#1C1C1C]/20 py-2 text-xl focus:outline-none focus:border-[#1C1C1C] transition-colors min-h-[100px]"
-                                    placeholder="Brief description of the space..."
-                                />
-                            </div>
-
-                            <div className="flex gap-6 pt-8">
-                                <button onClick={() => setStep(1)} className="text-xs uppercase tracking-[0.25em] opacity-50 hover:opacity-100">Back</button>
+                                <div className="w-20 h-20 bg-[#1C1C1C] rounded-full flex items-center justify-center text-[#F5F2EB]">
+                                    <Check className="w-10 h-10" />
+                                </div>
+                                <h3 className="text-3xl font-serif">Request Received.</h3>
+                                <p className="opacity-60 font-light max-w-xs mx-auto">
+                                    Thank you, {formData.name}. We have received your inquiry for {formData.service} and will be in touch shortly.
+                                </p>
                                 <button
                                     onClick={onClose}
-                                    disabled={!isStep2Valid}
-                                    className={`group flex-1 flex justify-center items-center gap-4 text-xs uppercase tracking-[0.25em] bg-[#1C1C1C] text-[#F5F2EB] px-8 py-4 transition-all ${isStep2Valid ? 'hover:bg-[#333]' : 'opacity-50 cursor-not-allowed'}`}
+                                    className="mt-8 text-xs uppercase tracking-[0.25em] border-b border-[#1C1C1C] hover:opacity-50 transition-opacity"
                                 >
-                                    <span>Submit Request</span>
-                                    <Check className="w-4 h-4" />
+                                    Close
                                 </button>
-                            </div>
-                        </motion.div>
-                    )}
+                            </motion.div>
+                        ) : step === 1 ? (
+                            <motion.div
+                                key="step1"
+                                initial={{ opacity: 0, x: 20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                exit={{ opacity: 0, x: -20 }}
+                                className="space-y-12"
+                            >
+                                <div>
+                                    <h3 className="text-3xl font-serif mb-2">Let's start with the basics.</h3>
+                                    <p className="opacity-60 font-light">We'll tailor our portfolio to your needs.</p>
+                                </div>
+
+                                {/* Visual Indicator for Pre-Selected Service */}
+                                {formData.service && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: -10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        className="inline-flex items-center gap-3 px-4 py-3 bg-[#1C1C1C] text-[#F5F2EB] w-fit"
+                                    >
+                                        <Check className="w-3 h-3" />
+                                        <span className="text-[10px] uppercase tracking-widest font-medium">Selected: {formData.service}</span>
+                                    </motion.div>
+                                )}
+
+                                <div className="space-y-8">
+                                    <div className="space-y-2 group">
+                                        <label className="text-xs uppercase tracking-widest opacity-50 group-focus-within:opacity-100 transition-opacity">Your Name</label>
+                                        <input
+                                            type="text"
+                                            value={formData.name}
+                                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                            className="w-full bg-transparent border-b border-[#1C1C1C]/20 py-2 text-xl focus:outline-none focus:border-[#1C1C1C] transition-colors"
+                                            placeholder="e.g. Jane Doe"
+                                            autoFocus
+                                        />
+                                    </div>
+                                    <div className="space-y-2 group">
+                                        <label className="text-xs uppercase tracking-widest opacity-50 group-focus-within:opacity-100 transition-opacity">Company / Org</label>
+                                        <input
+                                            type="text"
+                                            value={formData.company}
+                                            onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                                            className="w-full bg-transparent border-b border-[#1C1C1C]/20 py-2 text-xl focus:outline-none focus:border-[#1C1C1C] transition-colors"
+                                            placeholder="e.g. Sterling Partners"
+                                        />
+                                    </div>
+                                </div>
+
+                                <button
+                                    onClick={() => isStep1Valid && setStep(2)}
+                                    disabled={!isStep1Valid}
+                                    className={`group flex items-center gap-4 text-xs uppercase tracking-[0.25em] bg-[#1C1C1C] text-[#F5F2EB] px-8 py-4 transition-all ${isStep1Valid ? 'hover:bg-[#333]' : 'opacity-50 cursor-not-allowed'}`}
+                                >
+                                    <span>Next Step</span>
+                                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                </button>
+                            </motion.div>
+                        ) : (
+                            <motion.div
+                                key="step2"
+                                initial={{ opacity: 0, x: 20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                className="space-y-12"
+                            >
+                                <div>
+                                    <h3 className="text-3xl font-serif mb-2">What are you looking for?</h3>
+                                    <p className="opacity-60 font-light">Tell us about the scope.</p>
+                                </div>
+
+                                <div className="space-y-6">
+                                    {[
+                                        'Fully-Custom Masterpiece',
+                                        'Moodboard Collection',
+                                        'Art Strategy Consulting',
+                                        'Other'
+                                    ].map((opt) => (
+                                        <label key={opt} className="flex items-center gap-4 cursor-pointer group select-none" onClick={() => setFormData({ ...formData, service: opt })}>
+                                            <div className={`w-6 h-6 border border-[#1C1C1C]/30 rounded-full flex items-center justify-center transition-colors ${formData.service === opt ? 'border-[#1C1C1C]' : 'group-hover:border-[#1C1C1C]'}`}>
+                                                <div className={`w-3 h-3 bg-[#1C1C1C] rounded-full transition-opacity ${formData.service === opt ? 'opacity-100' : 'opacity-0'}`} />
+                                            </div>
+                                            <span className={`text-lg font-light transition-colors ${formData.service === opt ? 'text-[#1C1C1C]' : 'text-[#1C1C1C]/60 group-hover:text-[#1C1C1C]'}`}>{opt}</span>
+                                        </label>
+                                    ))}
+                                </div>
+
+                                <div className="space-y-2 pt-8 group">
+                                    <label className="text-xs uppercase tracking-widest opacity-50 group-focus-within:opacity-100 transition-opacity">Any specifics?</label>
+                                    <textarea
+                                        value={formData.details}
+                                        onChange={(e) => setFormData({ ...formData, details: e.target.value })}
+                                        className="w-full bg-transparent border-b border-[#1C1C1C]/20 py-2 text-xl focus:outline-none focus:border-[#1C1C1C] transition-colors min-h-[100px]"
+                                        placeholder="Brief description of the space..."
+                                    />
+                                </div>
+
+                                <div className="flex gap-6 pt-8">
+                                    <button onClick={() => setStep(1)} className="text-xs uppercase tracking-[0.25em] opacity-50 hover:opacity-100">Back</button>
+                                    <button
+                                        onClick={handleSubmit}
+                                        disabled={!isStep2Valid || isSubmitting}
+                                        className={`group flex-1 flex justify-center items-center gap-4 text-xs uppercase tracking-[0.25em] bg-[#1C1C1C] text-[#F5F2EB] px-8 py-4 transition-all ${isStep2Valid && !isSubmitting ? 'hover:bg-[#333]' : 'opacity-50 cursor-not-allowed'}`}
+                                    >
+                                        {isSubmitting ? (
+                                            <>
+                                                <span>Sending...</span>
+                                                <Loader2 className="w-4 h-4 animate-spin" />
+                                            </>
+                                        ) : (
+                                            <>
+                                                <span>Submit Request</span>
+                                                <Check className="w-4 h-4" />
+                                            </>
+                                        )}
+                                    </button>
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
             </motion.div>
         </>
